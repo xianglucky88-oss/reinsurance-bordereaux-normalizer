@@ -1,0 +1,4 @@
+movement_id,claim_id,risk_id,treaty_program,type,amount,currency,occurrence_period,target_movement_id
+MV-102,C9,R9,PROP-XOL,CORRECTION,260.00,USD,2026-03,MV-101
+MV-101,C9,R9,PROP-XOL,ADDITION,200.00,USD,2026-03,
+MV-103,C9,R9,PROP-XOL,RECOVERY,10.00,USD,2026-03,

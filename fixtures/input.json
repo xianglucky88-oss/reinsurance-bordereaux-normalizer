@@ -1,28 +1,121 @@
 {
-  "losses": [
+  "steps": [
     {
-      "claim": "C1",
-      "movement": "M1",
-      "amount": 120,
-      "currency": "USD"
+      "reference": {
+        "programs": [
+          {
+            "program_id": "PROP-XOL",
+            "settlement_currency": "USD",
+            "versions": [
+              {
+                "version": 1,
+                "effective_from": "2026-01",
+                "effective_to": "2026-03",
+                "layers": [
+                  {"layer_id": "L1", "attachment": "100", "limit": "50",
+                   "reinstatements": 1, "reinstatement_premium_rate": "1.0"},
+                  {"layer_id": "L2", "attachment": "150", "limit": "1000",
+                   "reinstatements": 0}
+                ]
+              },
+              {
+                "version": 2,
+                "effective_from": "2026-04",
+                "effective_to": null,
+                "layers": [
+                  {"layer_id": "L1", "attachment": "100", "limit": "50",
+                   "reinstatements": 1, "reinstatement_premium_rate": "1.0"},
+                  {"layer_id": "L2", "attachment": "150", "limit": "700",
+                   "reinstatements": 0}
+                ]
+              }
+            ]
+          }
+        ],
+        "fx": [
+          {"snapshot_id": "FX-2026-01", "period": "2026-01", "revision": 1,
+           "base": "USD", "rates": {"EUR": "1.08", "GBP": "1.27"}},
+          {"snapshot_id": "FX-2026-02", "period": "2026-02", "revision": 1,
+           "base": "USD", "rates": {"EUR": "1.10", "GBP": "1.26"}},
+          {"snapshot_id": "FX-2026-03", "period": "2026-03", "revision": 1,
+           "base": "USD", "rates": {"EUR": "1.09", "GBP": "1.25"}},
+          {"snapshot_id": "FX-2026-04", "period": "2026-04", "revision": 1,
+           "base": "USD", "rates": {"EUR": "1.11", "GBP": "1.24"}}
+        ]
+      }
     },
     {
-      "claim": "C1",
-      "movement": "M2",
-      "amount": 80,
-      "currency": "USD"
-    }
-  ],
-  "treaties": [
-    {
-      "name": "L1",
-      "attachment": 100,
-      "limit": 50
+      "batch": {"source": "broker-a", "batch_id": "BA-2026-01", "period": "2026-01"},
+      "risks": [
+        {"risk_id": "R1", "treaty_program": "PROP-XOL", "currency": "USD",
+         "policy_id": "P-1001", "cedent": "Acme Insurance"},
+        {"risk_id": "R2", "treaty_program": "PROP-XOL", "currency": "EUR",
+         "policy_id": "P-1002", "cedent": "Acme Insurance"}
+      ],
+      "claims": [
+        {"claim_id": "C1", "risk_id": "R1"},
+        {"claim_id": "C2", "risk_id": "R2"}
+      ],
+      "movements": [
+        {"movement_id": "M1", "claim_id": "C1", "type": "ADDITION",
+         "amount": "120.00", "currency": "USD", "occurrence_period": "2026-01"},
+        {"movement_id": "M2", "claim_id": "C2", "type": "ADDITION",
+         "amount": "300.00", "currency": "EUR", "occurrence_period": "2026-01"}
+      ]
     },
     {
-      "name": "L2",
-      "attachment": 150,
-      "limit": 100
+      "batch": {"source": "broker-a", "batch_id": "BA-2026-02", "period": "2026-02"},
+      "risks": [
+        {"risk_id": "R3", "treaty_program": "PROP-XOL", "currency": "GBP",
+         "policy_id": "P-1003", "cedent": "Beacon Mutual"}
+      ],
+      "claims": [
+        {"claim_id": "C3", "risk_id": "R3"}
+      ],
+      "movements": [
+        {"movement_id": "M3", "claim_id": "C1", "type": "CORRECTION",
+         "amount": "400.00", "currency": "USD", "target_movement_id": "M1",
+         "occurrence_period": "2026-01"},
+        {"movement_id": "M4", "claim_id": "C2", "type": "RECOVERY",
+         "amount": "24.00", "currency": "EUR", "occurrence_period": "2026-02"},
+        {"movement_id": "M5", "claim_id": "C3", "type": "ADDITION",
+         "amount": "500.00", "currency": "GBP", "occurrence_period": "2026-02"},
+        {"movement_id": "M6", "claim_id": "C3", "type": "ADDITION",
+         "amount": "-50.00", "currency": "GBP", "occurrence_period": "2026-02"},
+        {"movement_id": "M7", "claim_id": "C1", "type": "FROBNICATE",
+         "amount": "10.00", "currency": "USD", "occurrence_period": "2026-02"}
+      ]
+    },
+    {
+      "reference": {
+        "fx": [
+          {"snapshot_id": "FX-2026-02", "period": "2026-02", "revision": 2,
+           "base": "USD", "rates": {"EUR": "1.12", "GBP": "1.26"}}
+        ]
+      }
+    },
+    {
+      "batch": {"source": "broker-a", "batch_id": "BA-2026-02B", "period": "2026-02"},
+      "movements": [
+        {"movement_id": "M8", "claim_id": "C2", "type": "ADDITION",
+         "amount": "50.00", "currency": "EUR", "occurrence_period": "2026-02"},
+        {"movement_id": "M2", "claim_id": "C2", "type": "ADDITION",
+         "amount": "300.00", "currency": "EUR", "occurrence_period": "2026-01"}
+      ]
+    },
+    {
+      "batch": {"source": "broker-b", "batch_id": "BB-2026-03", "period": "2026-03"},
+      "movements": [
+        {"movement_id": "M10", "claim_id": "C1", "type": "ADDITION",
+         "amount": "25.00", "currency": "USD", "occurrence_period": "2026-03"}
+      ]
+    },
+    {
+      "batch": {"source": "broker-a", "batch_id": "BA-2026-04", "period": "2026-04"},
+      "movements": [
+        {"movement_id": "M11", "claim_id": "C1", "type": "ADDITION",
+         "amount": "50.00", "currency": "USD", "occurrence_period": "2026-04"}
+      ]
     }
   ]
 }

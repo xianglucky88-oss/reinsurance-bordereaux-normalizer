@@ -1,0 +1,44 @@
+{
+  "programs": [
+    {
+      "program_id": "PROP-XOL",
+      "settlement_currency": "USD",
+      "versions": [
+        {
+          "version": 1,
+          "effective_from": "2026-01",
+          "effective_to": "2026-03",
+          "layers": [
+            {"layer_id": "L1", "attachment": "100", "limit": "50",
+             "reinstatements": 1, "reinstatement_premium_rate": "1.0"},
+            {"layer_id": "L2", "attachment": "150", "limit": "1000",
+             "reinstatements": 0}
+          ]
+        },
+        {
+          "version": 2,
+          "effective_from": "2026-04",
+          "effective_to": null,
+          "layers": [
+            {"layer_id": "L1", "attachment": "100", "limit": "50",
+             "reinstatements": 1, "reinstatement_premium_rate": "1.0"},
+            {"layer_id": "L2", "attachment": "150", "limit": "700",
+             "reinstatements": 0}
+          ]
+        }
+      ]
+    }
+  ],
+  "fx": [
+    {"snapshot_id": "FX-2026-01", "period": "2026-01", "revision": 1,
+     "base": "USD", "rates": {"EUR": "1.08", "GBP": "1.27"}},
+    {"snapshot_id": "FX-2026-02", "period": "2026-02", "revision": 1,
+     "base": "USD", "rates": {"EUR": "1.10", "GBP": "1.26"}},
+    {"snapshot_id": "FX-2026-02", "period": "2026-02", "revision": 2,
+     "base": "USD", "rates": {"EUR": "1.12", "GBP": "1.26"}},
+    {"snapshot_id": "FX-2026-03", "period": "2026-03", "revision": 1,
+     "base": "USD", "rates": {"EUR": "1.09", "GBP": "1.25"}},
+    {"snapshot_id": "FX-2026-04", "period": "2026-04", "revision": 1,
+     "base": "USD", "rates": {"EUR": "1.11", "GBP": "1.24"}}
+  ]
+}
