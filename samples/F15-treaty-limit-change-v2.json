@@ -1,0 +1,28 @@
+{
+  "losses": [
+    {
+      "claim": "C1",
+      "movement": "M1",
+      "amount": 120,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M2",
+      "amount": 80,
+      "currency": "USD"
+    }
+  ],
+  "treaties": [
+    {
+      "name": "L1",
+      "attachment": 100,
+      "limit": 100
+    },
+    {
+      "name": "L2",
+      "attachment": 150,
+      "limit": 100
+    }
+  ]
+}

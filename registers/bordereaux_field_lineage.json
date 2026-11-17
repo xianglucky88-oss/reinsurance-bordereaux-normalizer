@@ -1,0 +1,236 @@
+{
+  "schema": "bordereaux-field-lineage/1",
+  "description": "经纪人 bordereaux 列到引擎符号、输出字段与规则版本的逐列血缘。每条 source_ref 指向 commit 809d7c1 中真正读取该值的那一行。status 取值：IMPLEMENTED（被读取且影响输出）、READ_UNUSED（输入里存在但引擎从不引用）、NOT_IMPLEMENTED（业务概念，代码中无对应路径）。",
+  "generated_against_commit": "809d7c19bcdcac08332a970f2bc809707e532441",
+  "rule_version": "R-809d7c1.1",
+  "verification": {
+    "tool": "tools/check_samples.py",
+    "absence_check": "对下文每个 NOT_IMPLEMENTED 字段执行 grep -rniw <field> src/，结果均为 0 次命中（证据见 docs/reinsurance-handover/02-field-lineage.md 的 Evidence 小节）"
+  },
+  "columns": [
+    {
+      "id": "COL-LOSSES-CONTAINER",
+      "broker_column_aliases": ["losses", "claims", "loss_rows", "bordereaux_lines"],
+      "normalized_field": "losses",
+      "direction": "input_required",
+      "container": true,
+      "read_at": ["src/reinsurance_bordereaux_normalizer/parser.py:2"],
+      "engine_symbol": "payload.get(\"losses\", [])",
+      "status": "IMPLEMENTED",
+      "required": false,
+      "absent_behaviour": "取默认值 []，引擎返回 cumulative_loss 为 0、无 allocations、status 仍为 ok。空提交与缺 key 在输出上无法区分。",
+      "wrong_type_behaviour": "抛 ValueError: losses must be a list（parser.py:3-4）。这是全仓库唯一一处明确的前置校验错误。",
+      "sample": "E03-losses-not-list"
+    },
+    {
+      "id": "COL-CLAIM",
+      "broker_column_aliases": ["claim", "claim_ref", "claim_id", "claim_no", "loss_ref", "reference"],
+      "normalized_field": "claim",
+      "direction": "input_required",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:9"],
+      "engine_symbol": "loss[\"claim\"]",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "used_for_calculation": false,
+      "used_for": "仅作为行标签回写到每条 allocation。从不用于分组，也从不用于重置 cumulative。",
+      "absent_behaviour": "在 engine.py:9 抛 KeyError: 'claim'，此时该行的算术已经算完。",
+      "wrong_type_behaviour": "任意 JSON 标量原样回写，无类型校验。",
+      "sample": "F02-two-claims-global-pool",
+      "boundary": "所有赔案共用一条 running cumulative；不存在按赔案的 attachment 或 limit。"
+    },
+    {
+      "id": "COL-MOVEMENT",
+      "broker_column_aliases": ["movement", "movement_ref", "transaction", "txn", "advice", "movement_type", "movement_seq"],
+      "normalized_field": "movement",
+      "direction": "input_required",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:9"],
+      "engine_symbol": "loss[\"movement\"]",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "used_for_calculation": false,
+      "used_for": "仅作为行标签回写。从不作为排序键，也从不用于识别更正。",
+      "absent_behaviour": "在 engine.py:9 抛 KeyError: 'movement'。",
+      "wrong_type_behaviour": "任意 JSON 标量原样回写。",
+      "sample": "F03a-movement-order-forward, F03b-movement-order-reversed",
+      "boundary": "顺序只取决于文件行序。同一组 movement 换一个行序会得到不同的分摊结果，因此经纪人的行序是一个隐式输入。"
+    },
+    {
+      "id": "COL-AMOUNT",
+      "broker_column_aliases": ["amount", "gross_paid", "paid", "incurred", "loss_amount", "movement_amount", "value"],
+      "normalized_field": "amount",
+      "direction": "input_required",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:4"],
+      "engine_symbol": "float(loss[\"amount\"])",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "signed": true,
+      "used_for": "推进全局 running cumulative。负数被当作摊回（recovery）处理。",
+      "absent_behaviour": "在 engine.py:4 的累加语句中抛 KeyError: 'amount'。",
+      "wrong_type_behaviour": "数值字符串被静默强转（float('120') = 120.0）；非数值文本抛 ValueError: could not convert string to float；JSON null 抛 TypeError。",
+      "sample": "F13-string-amount-coerced, E01-missing-amount, E04-amount-not-numeric",
+      "boundary": "不校验符号约定：任何负数都是摊回，无法与录入符号错误区分。"
+    },
+    {
+      "id": "COL-CURRENCY",
+      "broker_column_aliases": ["currency", "currency_code", "ccy", "curr", "original_currency"],
+      "normalized_field": "currency",
+      "direction": "input_unused",
+      "read_at": [],
+      "engine_symbol": null,
+      "status": "READ_UNUSED",
+      "required": false,
+      "used_for": "无。该字段被接受、被忽略，也从不回写。",
+      "absent_behaviour": "无影响。删掉 currency 不改变任何输出。",
+      "wrong_type_behaviour": "无影响。",
+      "sample": "F07-mixed-currency-no-fx, F13-string-amount-coerced",
+      "boundary": "不同币种的金额被当作无单位数字直接相加。没有汇率换算、没有汇率表，输出信封中也没有币种。重命名或删除该列都是 no-op。",
+      "evidence": "grep -rniw currency src/ -> 0 次命中"
+    },
+    {
+      "id": "COL-TREATY-NAME",
+      "broker_column_aliases": ["treaties[].name", "treaty", "layer", "section", "contract", "treaty_ref"],
+      "normalized_field": "treaties[].name",
+      "direction": "input_required",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:9"],
+      "engine_symbol": "treaty[\"name\"]",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "used_for": "allocation 行上的标签；也是维护者把输出 join 回 treaty 的唯一身份。",
+      "absent_behaviour": "在 engine.py:9 抛 KeyError: 'name'，但仅当该层产生了非零金额时才触发；从不命中的层不会报错。",
+      "wrong_type_behaviour": "原样回写。",
+      "sample": "F01-cross-layer-trace",
+      "boundary": "name 不是 id。同名 treaty 在输出中无法区分；改名会静默破坏下游 join，且无告警。"
+    },
+    {
+      "id": "COL-TREATY-ATTACHMENT",
+      "broker_column_aliases": ["treaties[].attachment", "attachment", "attaching", "retention", "deductible", "priority"],
+      "normalized_field": "treaties[].attachment",
+      "direction": "input_required",
+      "read_at": [
+        "src/reinsurance_bordereaux_normalizer/engine.py:2",
+        "src/reinsurance_bordereaux_normalizer/engine.py:6",
+        "src/reinsurance_bordereaux_normalizer/engine.py:7"
+      ],
+      "engine_symbol": "treaty[\"attachment\"]",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "used_for": "既作为层的排序键，也作为层区间的下界。",
+      "absent_behaviour": "在 engine.py:2 排序时抛 KeyError: 'attachment'，发生在处理任何 loss 之前。",
+      "wrong_type_behaviour": "无强转。字符串会在排序处抛 TypeError: '<' not supported between instances of 'str' and 'int'，导致整次运行失败，而非单行失败。",
+      "sample": "E02-attachment-as-string",
+      "boundary": "层按 attachment 排序，但不校验重叠或缺口；attachment 相同则回退到输入顺序（F14）；负 attachment 被接受并产生反常区间。"
+    },
+    {
+      "id": "COL-TREATY-LIMIT",
+      "broker_column_aliases": ["treaties[].limit", "limit", "width", "cover", "capacity", "top_and_bottom", "line_size"],
+      "normalized_field": "treaties[].limit",
+      "direction": "input_required",
+      "read_at": [
+        "src/reinsurance_bordereaux_normalizer/engine.py:6",
+        "src/reinsurance_bordereaux_normalizer/engine.py:7"
+      ],
+      "engine_symbol": "treaty[\"attachment\"] + treaty[\"limit\"]",
+      "status": "IMPLEMENTED",
+      "required": true,
+      "semantics": "层宽（WIDTH），不是层顶。层顶由 attachment + limit 计算得到。",
+      "used_for": "层区间的上界。",
+      "absent_behaviour": "在 engine.py:6 抛 KeyError: 'limit'（逐 loss 行、逐 treaty 触发）。",
+      "wrong_type_behaviour": "attachment 为 int、limit 为 str 时抛 TypeError: unsupported operand type(s) for +: 'int' and 'str'（engine.py:6）。limit 为 0 或负数时静默产生空区间且无 allocation。",
+      "sample": "F04-overlapping-layers-double-count",
+      "boundary": "由于 top = attachment + limit，若经纪人模板只提供 top 而不提供 limit，会静默超配。limit -> top 的改名会抛 KeyError，这是唯一安全的失败方式。"
+    },
+    {
+      "id": "COL-DERIVED-CUMULATIVE",
+      "broker_column_aliases": [],
+      "normalized_field": "cumulative_loss",
+      "direction": "output",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:10"],
+      "engine_symbol": "cumulative (running float)",
+      "status": "IMPLEMENTED",
+      "used_for": "报告用。为所有行按文件顺序对 float(amount) 求和。",
+      "boundary": "是整次运行的总计，不是按赔案、按期间或按 treaty 的小计。浮点累加会使 0.1+0.2 被报成 0.30000000000000004。",
+      "sample": "F08a-rounding-half-even-low"
+    },
+    {
+      "id": "COL-DERIVED-UNALLOCATED",
+      "broker_column_aliases": [],
+      "normalized_field": "unallocated",
+      "direction": "output",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:10"],
+      "engine_symbol": "max(0.0, cumulative - sum(allocated))",
+      "status": "IMPLEMENTED",
+      "used_for": "落在所有层之外的残余损失。",
+      "boundary": "被下截断为 0，因此无法表示超配。它还混合了三种互不相同的原因：超出最高层、落在层间缺口、以及舍入漂移；这三者在输出中无法拆开。",
+      "sample": "F05-layer-gap-unallocated, F06-identical-layers-masked-unallocated, F17-rounding-drift-200-movements"
+    },
+    {
+      "id": "COL-DERIVED-ALLOCATIONS",
+      "broker_column_aliases": [],
+      "normalized_field": "allocations[]",
+      "direction": "output",
+      "read_at": ["src/reinsurance_bordereaux_normalizer/engine.py:9"],
+      "engine_symbol": "list of {claim, movement, treaty, allocated}",
+      "status": "IMPLEMENTED",
+      "used_for": "唯一的分摊输出。",
+      "boundary": "不携带币种、treaty 版本、规则版本、源行号、生效日和期间。下游无法仅凭这一行还原出它是哪个 treaty 版本、哪套汇率算出的。",
+      "sample": "F01-cross-layer-trace"
+    }
+  ],
+  "not_implemented_business_columns": [
+    {
+      "id": "NI-FX",
+      "broker_column_aliases": ["fx_rate", "exchange_rate", "rate", "currency_pair", "settlement_currency", "rate_date"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "多币种 bordereaux 折算进单一 treaty 币种所必需。",
+      "evidence": "grep -rniw 'fx|rate|exchange' src/ -> 0 次命中",
+      "impact_sample": "F07-mixed-currency-no-fx"
+    },
+    {
+      "id": "NI-TREATY-VERSION",
+      "broker_column_aliases": ["treaty_version", "endorsement", "amendment", "version", "effective_from", "effective_to"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "期间内的 treaty 变更必须把 movement 路由到损失日或通知日当日生效的版本。",
+      "evidence": "grep -rniw 'version|effective' src/ -> 0 次命中",
+      "impact_sample": "F15-treaty-limit-change-v2"
+    },
+    {
+      "id": "NI-LOSS-DATE",
+      "broker_column_aliases": ["loss_date", "date_of_loss", "occurrence_date", "advice_date", "accounting_date", "period", "month"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "把 movement 归入期间、套用当日生效的 treaty 版本、按正确汇率日计值，都依赖它。",
+      "evidence": "grep -rniw 'date|month|period' src/ -> 0 次命中",
+      "impact_sample": "F11a-full-history, F11b-month-only-delta"
+    },
+    {
+      "id": "NI-FILE-IDENTITY",
+      "broker_column_aliases": ["file_id", "bordereaux_id", "statement_no", "submission_hash", "batch_id"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "重复文件检测需要稳定身份。没有它，重复提交同一文件会静默把 cumulative 翻倍。",
+      "evidence": "grep -rniw 'file_id|hash|batch|dedup' src/ -> 0 次命中",
+      "impact_sample": "F10-duplicate-row"
+    },
+    {
+      "id": "NI-CEDED-SHARE",
+      "broker_column_aliases": ["ceded_pct", "share", "quota_share", "participation", "line"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "所有层都被当作 100% 层。引擎没有 share 概念，比例条约无法表达。",
+      "evidence": "grep -rniw 'ceded|share|percent|participation' src/ -> 0 次命中"
+    },
+    {
+      "id": "NI-REINSTATEMENT",
+      "broker_column_aliases": ["reinstatement_premium", "reinstatement_rate", "reinstatement_count", "no_claims_bonus"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "摊回会免费释放层容量。没有恢复款、没有恢复次数、也没有年度累计限额。",
+      "evidence": "grep -rniw 'reinstat|premium' src/ -> 0 次命中",
+      "impact_sample": "F12-recovery-reduces-cumulative"
+    },
+    {
+      "id": "NI-CORRECTION-LINK",
+      "broker_column_aliases": ["corrects_movement", "reversal_of", "correction_flag", "supersedes", "prior_movement"],
+      "status": "NOT_IMPLEMENTED",
+      "why_it_matters": "月度更正必须与被它替代的 movement 对冲。引擎只看到一堆无序的带符号数字。",
+      "evidence": "grep -rniw 'correction|supersede|reversal' src/ -> 0 次命中",
+      "impact_sample": "F03a-movement-order-forward, F03b-movement-order-reversed"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "losses": [
+    {
+      "claim": "C1",
+      "movement": "M1",
+      "amount": 300,
+      "currency": "USD"
+    }
+  ],
+  "treaties": [
+    {
+      "name": "B",
+      "attachment": 100,
+      "limit": 100
+    },
+    {
+      "name": "A",
+      "attachment": 100,
+      "limit": 100
+    }
+  ]
+}

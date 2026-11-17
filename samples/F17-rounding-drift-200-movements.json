@@ -1,0 +1,1211 @@
+{
+  "losses": [
+    {
+      "claim": "C1",
+      "movement": "M000",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M001",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M002",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M003",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M004",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M005",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M006",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M007",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M008",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M009",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M010",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M011",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M012",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M013",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M014",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M015",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M016",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M017",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M018",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M019",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M020",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M021",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M022",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M023",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M024",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M025",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M026",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M027",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M028",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M029",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M030",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M031",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M032",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M033",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M034",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M035",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M036",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M037",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M038",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M039",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M040",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M041",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M042",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M043",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M044",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M045",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M046",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M047",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M048",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M049",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M050",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M051",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M052",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M053",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M054",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M055",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M056",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M057",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M058",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M059",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M060",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M061",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M062",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M063",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M064",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M065",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M066",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M067",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M068",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M069",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M070",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M071",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M072",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M073",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M074",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M075",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M076",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M077",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M078",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M079",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M080",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M081",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M082",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M083",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M084",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M085",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M086",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M087",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M088",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M089",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M090",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M091",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M092",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M093",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M094",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M095",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M096",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M097",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M098",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M099",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M100",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M101",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M102",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M103",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M104",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M105",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M106",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M107",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M108",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M109",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M110",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M111",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M112",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M113",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M114",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M115",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M116",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M117",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M118",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M119",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M120",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M121",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M122",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M123",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M124",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M125",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M126",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M127",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M128",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M129",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M130",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M131",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M132",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M133",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M134",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M135",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M136",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M137",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M138",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M139",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M140",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M141",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M142",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M143",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M144",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M145",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M146",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M147",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M148",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M149",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M150",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M151",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M152",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M153",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M154",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M155",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M156",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M157",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M158",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M159",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M160",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M161",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M162",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M163",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M164",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M165",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M166",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M167",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M168",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M169",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M170",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M171",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M172",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M173",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M174",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M175",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M176",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M177",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M178",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M179",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M180",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M181",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M182",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M183",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M184",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M185",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M186",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M187",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M188",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M189",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M190",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M191",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M192",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M193",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M194",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M195",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M196",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M197",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M198",
+      "amount": 0.005,
+      "currency": "USD"
+    },
+    {
+      "claim": "C1",
+      "movement": "M199",
+      "amount": 0.005,
+      "currency": "USD"
+    }
+  ],
+  "treaties": [
+    {
+      "name": "L1",
+      "attachment": 0,
+      "limit": 1000
+    }
+  ]
+}

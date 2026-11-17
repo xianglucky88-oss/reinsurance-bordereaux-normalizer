@@ -19,3 +19,18 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
 The fixture is local and deterministic; no network or credentials are required.
+
+## Handover assets
+
+`docs/reinsurance-handover/` documents what this engine provably does and what it
+does **not** implement, with 28 reproducible samples, two machine-readable
+registers, and three verification scripts:
+
+```bash
+python3 tools/check_samples.py         # 28 samples must reproduce recorded values
+python3 tools/check_registers.py       # registers must match the source tree
+python3 tools/trace_allocation.py samples/F01-cross-layer-trace.json
+```
+
+Start at `docs/reinsurance-handover/README.md`.
+

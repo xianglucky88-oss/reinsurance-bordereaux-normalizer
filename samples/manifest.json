@@ -1,0 +1,1802 @@
+{
+  "schema": "bordereaux-sample-manifest/1",
+  "rule_version": "R-809d7c1.1",
+  "generated_by": "freeze of current engine; values are characterization snapshots, not approved business results",
+  "engine": {
+    "module": "reinsurance_bordereaux_normalizer",
+    "commit": "809d7c19bcdcac08332a970f2bc809707e532441",
+    "files_sha256": {
+      "__init__.py": "f652682bf47c1e65cae555bdce7ed17b2e1054bbcf0132c07cede2386511fe3c",
+      "cli.py": "791bf69d951121a92be4f3b03164655c4e548d0844a946339d206be85dc04f3a",
+      "engine.py": "2fc4356d655bf4374c2260145a0de80507ff976c4152a0639393ab0be43b4c8d",
+      "models.py": "9186970afc38b054b21cd1b2f2d2a01b61fdedd5df5dee86499d1d3ecd1d0fa4",
+      "parser.py": "4eda463da474d59f7934c7f0a0681a68be740482ab5e6e7f4576f7b26c158823",
+      "pipeline.py": "514062ffe63facbb3f6826aa5de17acd557e14e73792392a5f6d14aa0e53491d",
+      "report.py": "f90ebf6c6a611ddaaf75ed09eb934c2a1265b1f4f04bf6e681d7fa6626768073"
+    }
+  },
+  "cases": [
+    {
+      "id": "F01-cross-layer-trace",
+      "file": "F01-cross-layer-trace.json",
+      "title": "One claim, two movements, crossing L1 into L2",
+      "demonstrates": "Canonical trace target: movement->layer allocation for a single claim.",
+      "notes": "M1(120): L1 gets 120-100=20. M2(80) moves cumulative 120->200: L1 gets 150-120=30, L2 gets 200-150=50.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 200.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 30.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L2",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F02-two-claims-global-pool",
+      "file": "F02-two-claims-global-pool.json",
+      "title": "Two unrelated claims share one cumulative",
+      "demonstrates": "cumulative_loss is a running total across ALL rows, not per claim.",
+      "notes": "C2 is measured against C1's 120, so C2 only contributes 30 to L1. No per-claim attachment.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 240.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C2",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 30.0
+          }
+        ],
+        "unallocated": 190.0
+      }
+    },
+    {
+      "id": "F03a-movement-order-forward",
+      "file": "F03a-movement-order-forward.json",
+      "title": "Same movement set, forward file order",
+      "demonstrates": "Allocation follows file order; movement labels are not sort keys.",
+      "notes": "Pay-then-recover: 300 and -100 both inside L1.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 300.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 300.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": -100.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F03b-movement-order-reversed",
+      "file": "F03b-movement-order-reversed.json",
+      "title": "Same movement set, reversed file order",
+      "demonstrates": "Reordering rows changes attribution; no movement sequencing exists.",
+      "notes": "Recover-then-pay: cumulative dips to -100 (below attachment), so only 200 lands in L1.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 300.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 200.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F04-overlapping-layers-double-count",
+      "file": "F04-overlapping-layers-double-count.json",
+      "title": "Layers overlap (L1 top 200 > L2 attachment 150)",
+      "demonstrates": "Overlap is not netted; the same loss slice is allocated to two treaties.",
+      "notes": "150..200 is inside both L1 and L2 and is counted twice.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 500.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 100.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L2",
+            "allocated": 100.0
+          }
+        ],
+        "unallocated": 300.0
+      }
+    },
+    {
+      "id": "F05-layer-gap-unallocated",
+      "file": "F05-layer-gap-unallocated.json",
+      "title": "Gap between L1 top (150) and L2 attachment (300)",
+      "demonstrates": "The 150..300 slice is silently dropped into unallocated.",
+      "notes": "Gap and above-top loss are indistinguishable in the unallocated bucket.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 400.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 50.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L2",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 300.0
+      }
+    },
+    {
+      "id": "F06-identical-layers-masked-unallocated",
+      "file": "F06-identical-layers-masked-unallocated.json",
+      "title": "Two identical layers, loss equals one layer width",
+      "demonstrates": "unallocated is floored at 0, hiding a negative (=over-allocation) result.",
+      "notes": "Allocations sum to 200 against cumulative 100; reported unallocated is 0.0, not -100.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 100.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 100.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L2",
+            "allocated": 100.0
+          }
+        ],
+        "unallocated": 0.0
+      }
+    },
+    {
+      "id": "F07-mixed-currency-no-fx",
+      "file": "F07-mixed-currency-no-fx.json",
+      "title": "USD and EUR movements summed without conversion",
+      "demonstrates": "currency is never read; amounts are added as bare numbers.",
+      "notes": "120 USD + 80 EUR is treated as 200 unit-less.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 200.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 80.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F08a-rounding-half-even-low",
+      "file": "F08a-rounding-half-even-low.json",
+      "title": "0.125 allocated at cent scale",
+      "demonstrates": "Python round() is half-to-even, not half-up.",
+      "notes": "0.125 -> 0.12 (rounds to even); unallocated carries float noise 0.0050000000000000044.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 0.125,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 0.12
+          }
+        ],
+        "unallocated": 0.0050000000000000044
+      }
+    },
+    {
+      "id": "F08b-rounding-half-even-high",
+      "file": "F08b-rounding-half-even-high.json",
+      "title": "0.135 allocated at cent scale",
+      "demonstrates": "Half-to-even rounds up here because 4 is even.",
+      "notes": "0.135 -> 0.14.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 0.135,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 0.14
+          }
+        ],
+        "unallocated": 0.0
+      }
+    },
+    {
+      "id": "F09-subcent-vanish",
+      "file": "F09-subcent-vanish.json",
+      "title": "Two movements below half a cent each",
+      "demonstrates": "Sub-cent movements produce no allocation row at all.",
+      "notes": "Each rounds to 0.00 so no allocation is emitted; cumulative still records 0.008.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 0.008,
+        "allocations": [],
+        "unallocated": 0.008
+      }
+    },
+    {
+      "id": "F10-duplicate-row",
+      "file": "F10-duplicate-row.json",
+      "title": "Same claim+movement+amount submitted twice",
+      "demonstrates": "No file identity or dedup; identical rows are both counted.",
+      "notes": "Cumulative doubles to 240; two rows share the same claim/movement key.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 240.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 120.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F11a-full-history",
+      "file": "F11a-full-history.json",
+      "title": "Full-history file through month 2",
+      "demonstrates": "Allocations are recomputed against the whole run's cumulative.",
+      "notes": "M2 (200) pushes cumulative 900->1100, so 100 lands in L1.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 1100.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 100.0
+          }
+        ],
+        "unallocated": 1000.0
+      }
+    },
+    {
+      "id": "F11b-month-only-delta",
+      "file": "F11b-month-only-delta.json",
+      "title": "Month-2 delta file only",
+      "demonstrates": "A delta-only file cannot reproduce the full-history allocation.",
+      "notes": "Cumulative starts at 0, so the same M2 allocates 0 instead of 100.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 200.0,
+        "allocations": [],
+        "unallocated": 200.0
+      }
+    },
+    {
+      "id": "F12-recovery-reduces-cumulative",
+      "file": "F12-recovery-reduces-cumulative.json",
+      "title": "Pay, recover, pay again inside one layer",
+      "demonstrates": "A recovery lowers cumulative and therefore frees layer capacity (no reinstatement premium).",
+      "notes": "100, -50, 50: recoveries are netted, not priced.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 150.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 100.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": -50.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M3",
+            "treaty": "L1",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 50.0
+      }
+    },
+    {
+      "id": "F13-string-amount-coerced",
+      "file": "F13-string-amount-coerced.json",
+      "title": "amount supplied as a JSON string",
+      "demonstrates": "float() coercion silently accepts numeric strings.",
+      "notes": "String '120' becomes 120.0 with no warning.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 120.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 120.0
+          }
+        ],
+        "unallocated": 0.0
+      }
+    },
+    {
+      "id": "F14-attachment-tie-input-order",
+      "file": "F14-attachment-tie-input-order.json",
+      "title": "Two layers share attachment=100",
+      "demonstrates": "Ties keep input order (stable sort); no explicit precedence rule exists.",
+      "notes": "Output lists B before A because B appeared first in the payload.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 300.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "B",
+            "allocated": 100.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "A",
+            "allocated": 100.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "F15-treaty-limit-change-v2",
+      "file": "F15-treaty-limit-change-v2.json",
+      "title": "L1 limit raised 50 -> 100 for the whole run",
+      "demonstrates": "A treaty version change is applied run-wide; it cannot be dated per movement.",
+      "notes": "M2 now sends 80 to L1 (was 30 under v1) and still 50 to L2. No effective-date split.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 200.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 80.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L2",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 50.0
+      }
+    },
+    {
+      "id": "F16-zero-amount-suppressed",
+      "file": "F16-zero-amount-suppressed.json",
+      "title": "A genuine zero-amount movement",
+      "demonstrates": "Zero allocations emit no row, so 'no row' is ambiguous with 'not evaluated'.",
+      "notes": "M0 leaves no trace; only M1 appears.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 150.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 100.0
+          }
+        ],
+        "unallocated": 50.0
+      }
+    },
+    {
+      "id": "F17-rounding-drift-200-movements",
+      "file": "F17-rounding-drift-200-movements.json",
+      "title": "200 movements of 0.005 each",
+      "demonstrates": "Per-movement rounding does not telescope; drift accumulates and unallocated masks it.",
+      "notes": "Sum of allocations exceeds recorded cumulative; unallocated is floored to 0.0.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 1.0000000000000007,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M000",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M001",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M003",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M004",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M005",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M006",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M013",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M014",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M015",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M016",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M017",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M018",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M019",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M020",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M021",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M022",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M023",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M025",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M026",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M027",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M028",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M029",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M030",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M031",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M032",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M033",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M034",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M035",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M036",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M037",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M038",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M039",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M040",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M041",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M042",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M043",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M044",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M045",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M046",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M047",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M048",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M050",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M051",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M052",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M053",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M054",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M055",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M056",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M057",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M058",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M059",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M060",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M061",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M062",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M063",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M064",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M065",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M066",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M067",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M068",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M069",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M070",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M071",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M072",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M073",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M074",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M075",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M076",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M077",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M078",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M079",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M080",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M081",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M082",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M083",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M084",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M085",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M086",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M087",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M088",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M089",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M090",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M091",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M092",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M093",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M094",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M095",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M096",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M097",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M098",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M099",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M100",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M101",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M102",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M103",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M104",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M105",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M106",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M107",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M108",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M109",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M110",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M111",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M112",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M113",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M114",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M115",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M116",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M117",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M118",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M119",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M120",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M121",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M122",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M123",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M124",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M125",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M126",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M127",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M128",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M129",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M130",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M131",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M132",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M133",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M134",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M135",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M136",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M137",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M138",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M139",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M140",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M141",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M142",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M143",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M144",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M145",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M146",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M147",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M148",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M149",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M150",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M151",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M152",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M153",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M154",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M155",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M156",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M157",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M158",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M159",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M160",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M161",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M162",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M163",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M164",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M165",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M166",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M167",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M168",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M169",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M170",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M171",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M172",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M173",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M174",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M175",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M176",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M177",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M178",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M179",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M180",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M181",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M182",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M183",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M184",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M185",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M186",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M187",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M188",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M189",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M190",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M191",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M192",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M193",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M194",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M195",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M196",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M197",
+            "treaty": "L1",
+            "allocated": 0.01
+          },
+          {
+            "claim": "C1",
+            "movement": "M198",
+            "treaty": "L1",
+            "allocated": 0.01
+          }
+        ],
+        "unallocated": 0.0
+      }
+    },
+    {
+      "id": "F18-silent-row-drop",
+      "file": "F18-silent-row-drop.json",
+      "title": "Non-object rows are silently discarded",
+      "demonstrates": "parser.py:5 keeps only dict rows; malformed rows vanish with no error and no counter.",
+      "notes": "Only M1 survives. Nothing records that 3 input rows were dropped, so row counts cannot be reconciled.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 120.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 120.0
+          }
+        ],
+        "unallocated": 0.0
+      }
+    },
+    {
+      "id": "F19-resubmitted-file-concatenation",
+      "file": "F19-resubmitted-file-concatenation.json",
+      "title": "The same file submitted twice, concatenated",
+      "demonstrates": "There is no file identity, so a resubmission is just more rows and silently doubles the run.",
+      "notes": "Compare with F01 (same file once): cumulative 200 -> 400, L2 total 50 -> 100, unallocated 100 -> 250. Nothing flags the second copy.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 400.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 30.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L2",
+            "allocated": 50.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L2",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 250.0
+      }
+    },
+    {
+      "id": "F20-retroactive-restatement-narrowing",
+      "file": "F20-retroactive-restatement-narrowing.json",
+      "title": "A limit narrowing rewrites an already-reported movement",
+      "demonstrates": "Changing a layer re-prices movements that were reported under the old version.",
+      "notes": "Same M1 under the v1 layer 100 xs 100 (sample F01 territory) allocates 50; under this v2 layer 100 xs 20 it allocates 20. The movement did not change, only the treaty.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 150.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          }
+        ],
+        "unallocated": 130.0
+      }
+    },
+    {
+      "id": "F21-rollback-baseline-v1",
+      "file": "F21-rollback-baseline-v1.json",
+      "title": "Baseline v1 layers for rollback comparison",
+      "demonstrates": "The rollback target: restore this treaties array and F15 must return to these values.",
+      "notes": "Identical to sample F01. Keeping it as a named rollback baseline makes the F15 v1/v2 diff explicit.",
+      "expected_result": {
+        "project": "reinsurance-bordereaux-normalizer",
+        "status": "ok",
+        "cumulative_loss": 200.0,
+        "allocations": [
+          {
+            "claim": "C1",
+            "movement": "M1",
+            "treaty": "L1",
+            "allocated": 20.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L1",
+            "allocated": 30.0
+          },
+          {
+            "claim": "C1",
+            "movement": "M2",
+            "treaty": "L2",
+            "allocated": 50.0
+          }
+        ],
+        "unallocated": 100.0
+      }
+    },
+    {
+      "id": "E01-missing-amount",
+      "file": "E01-missing-amount.json",
+      "title": "Loss row without amount",
+      "demonstrates": "Missing required loss column fails deep in the engine, not at parse time.",
+      "notes": "",
+      "expected_error": {
+        "type": "KeyError",
+        "contains": "amount"
+      }
+    },
+    {
+      "id": "E02-attachment-as-string",
+      "file": "E02-attachment-as-string.json",
+      "title": "Treaty attachment supplied as a string",
+      "demonstrates": "attachment/limit have no coercion; sorting raises TypeError.",
+      "notes": "",
+      "expected_error": {
+        "type": "TypeError",
+        "contains": "<"
+      }
+    },
+    {
+      "id": "E03-losses-not-list",
+      "file": "E03-losses-not-list.json",
+      "title": "losses is not a list",
+      "demonstrates": "Parser raises a clear ValueError for a non-list losses value.",
+      "notes": "",
+      "expected_error": {
+        "type": "ValueError",
+        "contains": "losses must be a list"
+      }
+    },
+    {
+      "id": "E04-amount-not-numeric",
+      "file": "E04-amount-not-numeric.json",
+      "title": "amount is a non-numeric string",
+      "demonstrates": "float() coercion raises ValueError for non-numeric text.",
+      "notes": "",
+      "expected_error": {
+        "type": "ValueError",
+        "contains": "could not convert"
+      }
+    }
+  ]
+}

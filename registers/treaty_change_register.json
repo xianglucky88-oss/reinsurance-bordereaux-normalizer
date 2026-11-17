@@ -1,0 +1,104 @@
+{
+  "schema": "treaty-change-register/1",
+  "description": "引擎所消费的 treaty 层定义的版本化登记册。引擎没有 treaty 版本概念：每次运行只消费一个扁平的 'treaties' 数组。本登记册在文件/控制层补上版本纪律，并逐个版本记录引擎能表示与不能表示的内容。",
+  "rule_version": "R-809d7c1.1",
+  "engine_contract": {
+    "input_shape": "payload['treaties'] = [{name, attachment, limit}, ...]",
+    "top_semantics": "band = [attachment, attachment + limit]。'limit' 是层宽，不是层顶。",
+    "sort": "按 attachment 升序；相同则保留输入顺序（Python 稳定排序）",
+    "identity": "仅 name。没有 id、没有 version、没有生效日、没有币种。",
+    "whole_run_only": "同一数组作用于本次运行的每一条 movement。单条 movement 无法选择不同版本。"
+  },
+  "versions": [
+    {
+      "treaty_id": "T-L1",
+      "version": "v1",
+      "status": "current",
+      "effective_from": "not-representable",
+      "effective_to": "not-representable",
+      "layers": [
+        {"name": "L1", "attachment": 100, "limit": 50}
+      ],
+      "source_sample": "samples/F01-cross-layer-trace.json",
+      "engine_representable": true,
+      "notes": "随仓库 fixture 与 F01 使用的基线层。L1 区间为 [100, 150]。"
+    },
+    {
+      "treaty_id": "T-L1",
+      "version": "v2",
+      "status": "hypothetical-change-under-review",
+      "effective_from": "not-representable",
+      "effective_to": "not-representable",
+      "layers": [
+        {"name": "L1", "attachment": 100, "limit": 100}
+      ],
+      "source_sample": "samples/F15-treaty-limit-change-v2.json",
+      "engine_representable": false,
+      "change": "limit 50 -> 100，把 L1 区间由 [100, 150] 扩为 [100, 200]。",
+      "observed_reprice": {
+        "movement": "M2",
+        "treaty": "L1",
+        "under_v1": 30.0,
+        "under_v2": 80.0,
+        "delta": 50.0
+      },
+      "notes": "由于一次运行对全部 movement 只用一个数组，采用 v2 会把 M2 在 L1 上重述 +50。引擎无法把 v1 用在 1 月的 movement、把 v2 用在 2 月的 movement。登记册记录意图；引擎无法兑现。"
+    }
+  ],
+  "change_log": [
+    {
+      "entry": "REG-001",
+      "date": "2026-11-17",
+      "treaty_id": "T-L1",
+      "from_version": "v1",
+      "to_version": "v2",
+      "change_type": "limit_change",
+      "approved": false,
+      "rationale": "仅作可复核样例，不是已批准的业务变更。",
+      "engine_impact": "对每条累计损失跨越 [150, 200] 的 movement 做整次运行的重算",
+      "rollback": "恢复 v1 的 treaties 数组并重跑。由于输出不带版本标签，重述后的结果事后无法与原结果区分；每次结果都必须连同输入文件与 rule_version 一起留存。",
+      "evidence_sample": "F15-treaty-limit-change-v2"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "GAP-TV-1",
+      "gap": "没有生效日",
+      "detail": "期间中途的 treaty 修订无法只作用于生效日之后的 movement。",
+      "blocking_columns": ["effective_from", "effective_to", "loss_date", "advice_date"],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "GAP-TV-2",
+      "gap": "输出不带版本标签",
+      "detail": "allocation 行只带 treaty name。不同版本下的两次运行产生形状完全相同、无法区分的行。",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "GAP-TV-3",
+      "gap": "无重叠/缺口校验",
+      "detail": "层重叠会重复计算，层间缺口会把损失丢进 unallocated，两者都静默发生。",
+      "evidence_samples": ["F04-overlapping-layers-double-count", "F05-layer-gap-unallocated"],
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "GAP-TV-4",
+      "gap": "无 share / 分出比例",
+      "detail": "层隐含为 100%。比例条约无法表达。",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "GAP-TV-5",
+      "gap": "无年度累计限额与恢复",
+      "detail": "层的 limit 仅为本次运行的层宽；没有年度累计、没有恢复次数、也没有恢复款。",
+      "evidence_sample": "F12-recovery-reduces-cumulative",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "GAP-TV-6",
+      "gap": "name 不是身份",
+      "detail": "改名会静默破坏下游 join；同名层无法区分。",
+      "status": "NOT_IMPLEMENTED"
+    }
+  ]
+}

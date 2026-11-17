@@ -1,0 +1,20 @@
+{
+  "losses": [
+    {
+      "claim": "C1",
+      "movement": "M1",
+      "amount": 120,
+      "currency": "USD"
+    },
+    "corrupt-row",
+    null,
+    42
+  ],
+  "treaties": [
+    {
+      "name": "L1",
+      "attachment": 0,
+      "limit": 500
+    }
+  ]
+}
