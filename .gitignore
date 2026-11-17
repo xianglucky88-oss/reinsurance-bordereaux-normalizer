@@ -35,3 +35,7 @@ id_rsa.*
 **/*connection_string*
 **/*connstr*
 **/*dsn*
+
+# QA harness generated artefacts
+qa/reports/*.json
+!qa/reports/.gitkeep
